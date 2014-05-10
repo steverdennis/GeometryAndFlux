@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="GDMLSchema/gdml.xsd">
+
+<!-- 
+   created by Robert Hatcher rhatcher@fnal.gov 2014-05-07
+   A geometry consisting of a world with 6 physical volumes in it:
+   a cylinder, a box and (incomplete) sphere
+   and boolean (union, intersection, subtraction) combinations of those 
+-->
+
+  <define>
+    <constant name="k_cm"   value="1.0"/>
+    <constant name="k_m"    value="100.0"/>
+    <constant name="k_mm"   value="0.1"/>
+    <constant name="k_inch" value="2.54"/>
+    <constant name="eps"    value="0.00001*k_mm"/>
+    
+    <constant name="pi"     value="3.14159265358979312"/>    
+    <constant name="halfpi" value="pi/2."/>   
+
+    <constant name="kBasicLen"     value="1.0*k_m"/>
+    <constant name="kCylRadius"    value="kBasicLen/3.0"/>
+    <constant name="kSphereRadius" value="kBasicLen/2.0"/>
+
+    <constant name="kWorldWidth"   value="7.0*kBasicLen"/>
+    <constant name="kWorldHeight"  value="5.0*kBasicLen"/>
+    <constant name="kWorldLength"  value="3.0*kBasicLen"/>
+
+    <rotation name="rIdentity" unit="deg" x="  0" y="  0" z="  0"/>
+    <rotation name="rAboutX"   unit="deg" x=" 90" y="  0" z="  0"/>
+    <rotation name="rAboutY"   unit="deg" x="  0" y=" 90" z="  0"/>
+    <rotation name="rAboutZ"   unit="deg" x="  0" y="  0" z=" 90"/>
+    <rotation name="rAboutYZ"  unit="deg" x="  0" y=" 90" z=" 90"/>
+
+    <position name="posCentered" unit="cm" x="0" y="0" z="0"/>
+    <position name="posSphere"   unit="cm" x="kSphereRadius"
+                                           y="kSphereRadius"
+                                           z="kSphereRadius"/>
+
+  </define>
+  
+  <materials>
+   <element Z="1"  formula="H"  name="Hydrogen"> <atom value="1.00794"/>   </element>
+   <element Z="6"  formula="C"  name="Carbon">   <atom value="12.0107"/>   </element>
+   <element Z="7"  formula="N"  name="Nitrogen"> <atom value="14.01"/>     </element>
+   <element Z="8"  formula="O"  name="Oxygen" >  <atom value="15.9994"/>   </element>
+   <element Z="11" formula="Na" name="Sodium">   <atom value="22.989770"/> </element>
+   <element Z="13" formula="Al" name="Aluminum"> <atom value="26.981538"/> </element>
+   <element Z="14" formula="Si" name="Silicon">  <atom value="28.0855"/>   </element>
+   <element Z="16" formula="S"  name="Sulfur">   <atom value="32.066"/>    </element>
+   <element Z="17" formula="Cl" name="Chlorine"> <atom value="35.4527"/>   </element>
+   <element Z="18" formula="Ar" name="Argon">    <atom value="39.948"/>    </element>
+   <element Z="19" formula="K"  name="Potassium"><atom value="39.0983"/>   </element>
+   <element Z="20" formula="Ca" name="Calcium">  <atom value="40.078"/>    </element>
+   <element Z="22" formula="Ti" name="Titanium"> <atom value="47.867"/>    </element>
+   <element Z="26" formula="Fe" name="Iron">     <atom value="55.845"/>    </element>
+   <element Z="56" formula="Ba" name="Barium">   <atom value="137.327"/>   </element>
+
+  <material Z="1" formula=" " name="Vacuum" >
+   <D value="1e-25" unit="g/cc"/>
+   <atom value="1.00794" />
+  </material>
+
+  <material formula=" " name="Air">
+   <D  value="0.001205" unit="g/cc" />
+   <fraction n="0.78084"  ref="Nitrogen"/>
+   <fraction n="0.209476" ref="Oxygen"/>
+   <fraction n="0.00934"  ref="Argon"/>
+  </material>
+
+  <material formula=" " name="Granite">
+   <D value="2.7" unit="g/cc"/>
+   <fraction n="0.437" ref="Oxygen"/>
+   <fraction n="0.257" ref="Silicon"/>
+   <fraction n="0.222" ref="Sodium"/>
+   <fraction n="0.049" ref="Aluminum" />
+   <fraction n="0.020" ref="Iron" />
+   <fraction n="0.015" ref="Potassium"/>
+  </material>
+
+
+  <material formula=" " name="Scintillator">
+    <D value="0.8785" unit="g/cc"/>
+    <fraction n="0.1210" ref="Hydrogen"/>
+    <fraction n="0.8660" ref="Carbon"/>
+    <fraction n="0.0030" ref="Nitrogen"/>
+    <fraction n="0.0075" ref="Oxygen"/>
+    <fraction n="0.0025" ref="Sulfur"/>
+  </material>
+
+  <material formula="C2H3Cl+TiO2" name="PVC">
+   <D value="1.49" unit="g/cc"/>
+   <fraction n="0.0411" ref="Hydrogen"/>
+   <fraction n="0.3267" ref="Carbon"/>
+   <fraction n="0.4822" ref="Chlorine"/>
+   <fraction n="0.0899" ref="Titanium"/>
+   <fraction n="0.0601" ref="Oxygen"/>
+  </material>
+
+  <material formula=" " name="Glue">
+    <D value="1.34" unit="g/cc"/>
+    <fraction n="1.0" ref="Carbon"/>
+  </material>
+
+  <material formula="C6H5CH" name="WLSFiber">
+   <D value="1.0457" unit="g/cc"/>
+   <fraction n="0.1437" ref="Hydrogen"/>
+   <fraction n="0.8563" ref="Carbon"/>
+  </material>
+
+  <material formula="H2O" name="Water">
+   <D value="1.0" unit="g/cc"/>
+   <fraction n="0.1119" ref="Hydrogen"/>
+   <fraction n="0.8881" ref="Oxygen"/>
+  </material>
+
+  <material formula=" " name="Soup">
+   <D value="0.85*0.8785+0.15*1.49" unit="g/cc"/>
+   <fraction n="0.15" ref="PVC"/>
+   <fraction n="0.85" ref="Scintillator"/>
+  </material>
+
+  <material formula=" " name="Steel">
+   <D  value="7.87" unit="g/cc"/>
+   <fraction n="1."  ref="Iron"/>
+  </material>
+
+  <material formula=" " name="Graphite">
+   <D  value="1.0" unit="g/cc"/>
+   <fraction n="1."  ref="Carbon"/>
+  </material>
+
+  </materials>
+  
+  <solids>
+
+    <box name="sWorld" lunit="cm"
+         x="kWorldWidth"
+         y="kWorldHeight"
+         z="kWorldLength"/>   
+
+    <tube name="sCylinder" aunit="degree" lunit="cm" 
+         rmin="0" rmax="kCylRadius" deltaphi="360" z="kBasicLen"/>
+
+    <box name="sBox" lunit="cm"
+         x="kBasicLen" y="kBasicLen" z="kBasicLen"/>
+
+    <sphere name="sSphere" lunit="cm" aunit="deg"
+                  rmax="kSphereRadius" rmin="0.0"
+                  startphi="0" deltaphi="360"
+                  starttheta="0" deltatheta="135"/>
+
+    <union name="sUnion">
+      <first  ref="sCylinder"/>
+      <second ref="sCylinder"/>
+      <positionref ref="posCentered"/>
+      <rotationref ref="rAboutX"/>
+    </union>
+
+    <intersection name="sIntersection">
+      <first  ref="sCylinder"/>
+      <second ref="sCylinder"/>
+      <positionref ref="posCentered"/>
+      <rotationref ref="rAboutX"/>
+    </intersection>
+
+    <subtraction name="sSubtraction">
+      <first  ref="sBox"/>
+      <second ref="sSphere"/>
+      <positionref ref="posSphere"/>
+      <rotationref ref="rIdentity"/>
+    </subtraction>
+
+  </solids>
+    
+  <structure>    
+    
+    <volume name="vCylinder">
+      <materialref ref="Scintillator"/>
+      <solidref    ref="sCylinder"/>
+    </volume>
+
+    <volume name="vBox">
+      <materialref ref="Granite"/>
+      <solidref    ref="sBox"/>
+    </volume>
+
+    <volume name="vSphere">
+      <materialref ref="Air"/>
+      <solidref    ref="sSphere"/>
+    </volume>
+
+    <volume name="vUnion">
+      <materialref ref="Steel"/>
+      <solidref    ref="sUnion"/>
+    </volume>
+
+    <volume name="vIntersection">
+      <materialref ref="Steel"/>
+      <solidref    ref="sIntersection"/>
+    </volume>
+
+    <volume name="vSubtraction">
+      <materialref ref="Steel"/>
+      <solidref    ref="sSubtraction"/>
+    </volume>
+
+    
+    <volume name="vWorld" >
+      <materialref ref="Vacuum"/>   <!-- make this Vacuum -->
+      <solidref    ref="sWorld"/>        
+      
+      <physvol>
+	<volumeref ref="vCylinder"/>
+	<position name="pCylinder" unit="cm"
+		  x="-1.5*kBasicLen"
+		  y="1.0*kBasicLen"
+		  z="0.0"
+		  />
+        <rotationref ref="rIdentity"/>
+      </physvol>
+
+      <physvol>
+	<volumeref ref="vBox"/>
+	<position name="pBox" unit="cm"
+		  x="0.0*kBasicLen"
+		  y="1.0*kBasicLen"
+		  z="0.0"
+		  />
+        <rotationref ref="rIdentity"/>
+      </physvol>
+
+      <physvol>
+	<volumeref ref="vSphere"/>
+	<position name="pSphere" unit="cm"
+		  x="1.5*kBasicLen"
+		  y="1.0*kBasicLen"
+		  z="0.0"
+		  />
+        <rotationref ref="rIdentity"/>
+      </physvol>
+
+      <physvol>
+	<volumeref ref="vUnion"/>
+	<position name="pCylinder" unit="cm"
+		  x="-1.5*kBasicLen"
+		  y="-1.0*kBasicLen"
+		  z="0.0"
+		  />
+        <rotationref ref="rAboutY"/>
+      </physvol>
+
+      <physvol>
+	<volumeref ref="vIntersection"/>
+	<position name="pIntersection" unit="cm"
+		  x="0.0*kBasicLen"
+		  y="-1.0*kBasicLen"
+		  z="0.0"
+		  />
+        <rotationref ref="rAboutY"/>
+      </physvol>
+
+      <physvol>
+	<volumeref ref="vSubtraction"/>
+	<position name="pSubtraction" unit="cm"
+		  x="1.5*kBasicLen"
+		  y="-1.0*kBasicLen"
+		  z="0.0"
+		  />
+        <rotationref ref="rIdentity"/>
+      </physvol>
+
+    </volume>
+
+  </structure>
+  
+  <setup name="Default" version="1.0">
+    <world ref="vWorld" />
+  </setup>
+  
+</gdml>
