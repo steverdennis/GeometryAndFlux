@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="GDMLSchema/gdml.xsd">
+
+<!-- 
+   created by Robert Hatcher rhatcher@fnal.gov 2014-05-07
+   A very simple geometry of an XTRU and a frustrated cone in the world
+-->
+
+  <define>
+    <constant name="k_cm"   value="1.0"/>
+    <constant name="k_m"    value="100.0"/>
+    <constant name="k_mm"   value="0.1"/>
+    <constant name="k_inch" value="2.54"/>
+    <constant name="eps"    value="0.00001*k_mm"/>
+    
+    <constant name="pi"     value="3.14159265358979312"/>    
+    <constant name="halfpi" value="pi/2."/>   
+
+    <constant name="kWorldWidth"   value="7.0*k_m"/>
+    <constant name="kWorldHeight"  value="7.0*k_m"/>
+    <constant name="kWorldLength"  value="14.0*k_m"/>
+
+    <rotation name="rIdentity" unit="deg" x="  0" y="  0" z="  0"/>
+    <rotation name="rAboutX"   unit="deg" x=" 90" y="  0" z="  0"/>
+
+  </define>
+  
+  <materials>
+   <element Z="1"  formula="H"  name="Hydrogen"> <atom value="1.00794"/>   </element>
+   <element Z="6"  formula="C"  name="Carbon">   <atom value="12.0107"/>   </element>
+
+    <element Z="26" formula="Fe" name="Iron"> <atom value="55.845"/> </element>
+
+    <material Z="1" formula=" " name="Vacuum" >
+      <D value="1e-25" unit="g/cc"/>
+      <atom value="1.00794" />
+    </material>
+
+    <material formula=" " name="Scintillator">
+      <D value="0.8785" unit="g/cc"/>
+      <fraction n="0.1340" ref="Hydrogen"/>
+      <fraction n="0.8660" ref="Carbon"/>
+    </material>
+
+    <material formula=" " name="Steel">
+      <D  value="7.87" unit="g/cc"/>
+      <fraction n="1."  ref="Iron"/>
+    </material>
+
+  </materials>
+  
+  <solids>
+
+    <box name="sWorld" lunit="cm"
+         x="kWorldWidth"
+         y="kWorldHeight"
+         z="kWorldLength"/>   
+
+    <cone name="sCone" lunit="cm"
+          rmin1="0" rmax1="20" rmin2="0" rmax2="10" z="10"
+          aunit="deg"  startph="0" deltaphi="360"/>
+
+    <xtru name="sXtru" lunit="cm">
+      <twoDimVertex x="-177.292" y=" 154.711"  />
+      <twoDimVertex x="-308.432" y="  23.5712" />
+      <twoDimVertex x="-308.432" y="   1.1938" />
+      <twoDimVertex x="-305.435" y="   1.1938" />
+      <twoDimVertex x="-292.456" y="   8.6868" />
+      <twoDimVertex x="-280.01"  y="   8.6868" />
+      <twoDimVertex x="-241.91"  y="  -3.7592" />
+      <twoDimVertex x="-241.91"  y=" -90.0938" />
+      <twoDimVertex x="-177.292" y="-154.711"  />
+      <twoDimVertex x="-177.292" y="-190.602"  />
+      <twoDimVertex x=" 177.292" y="-190.602"  />
+      <twoDimVertex x=" 177.292" y="-154.711"  />
+      <twoDimVertex x=" 241.91"  y=" -90.0938" />
+      <twoDimVertex x=" 241.91"  y="  -3.7592" />
+      <twoDimVertex x=" 280.06"  y="   8.6868" />
+      <twoDimVertex x=" 297.942" y="   8.6868" />
+      <twoDimVertex x=" 305.435" y="   1.1938" />
+      <twoDimVertex x=" 308.432" y="   1.1938" />
+      <twoDimVertex x=" 308.432" y="  23.5712" />
+      <twoDimVertex x=" 177.292" y=" 154.711"  />
+      <twoDimVertex x=" 177.292" y=" 190.602"  />
+      <twoDimVertex x="-177.292" y=" 190.602"  />
+      <section zOrder="0" zPosition="0" 
+               xOffset="0" yOffset="0" scalingFactor="1"/>
+      <section zOrder="1" zPosition="250" 
+               xOffset="0" yOffset="0" scalingFactor="1"/>
+    </xtru>
+
+
+<!--
+    <subtraction name="sSubtraction">
+      <first  ref="sBox"/>
+      <second ref="sSphere"/>
+      <positionref ref="posSphere"/>
+      <rotationref ref="rIdentity"/>
+    </subtraction>
+-->
+
+  </solids>
+    
+  <structure>    
+    
+    <volume name="vXtru">
+      <materialref ref="Steel"/>
+      <solidref    ref="sXtru"/>
+      <auxiliary auxtype="Color" auxvalue="red"/>
+    </volume>
+    
+    <volume name="vCone">
+      <materialref ref="Scintillator"/>
+      <solidref    ref="sCone"/>
+    </volume>
+    
+    <volume name="vWorld" >
+      <materialref ref="Vacuum"/>   <!-- make this Vacuum -->
+      <solidref    ref="sWorld"/>        
+      
+      <physvol>
+	<volumeref ref="vXtru"/>
+	<position name="pXtru" unit="cm"
+		  x="0" y="0" z="0"/>
+        <rotationref ref="rIdentity"/>
+      </physvol>
+
+      <physvol>
+        <volumeref ref="vCone"/>
+        <position name="pCone" unit="cm" 
+                  x="0" y="0" z="600"/>
+        <rotationref ref="rIdentity"/>
+      </physvol>
+    </volume>
+
+  </structure>
+  
+  <setup name="Default" version="1.0">
+    <world ref="vWorld" />
+  </setup>
+  
+</gdml>
