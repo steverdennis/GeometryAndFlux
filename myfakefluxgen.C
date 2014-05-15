@@ -6,7 +6,6 @@
 #if !defined(__CINT__) || defined(__MAKECINT__)
 // hide from CINT, but not ACLiC
   #include "Numerical/RandomGen.h"
-  #include "FluxDrivers/GNuMIFlux.h"
   #include "FluxDrivers/GSimpleNtpFlux.h"
   #include "Utils/UnitUtils.h"
   #include "Utils/AppInit.h"

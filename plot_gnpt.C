@@ -21,7 +21,8 @@ void plot_gnpt(string fname="gntp.42.ghep.root", int nprint=10) {
 
   // book the histogram
   int nbins = (nEntries>1000) ? 200 : 40;
-  TH1D* histe = new TH1D("enu","E_{#nu}",nbins,0,10.);
+  TH1D* histe  = new TH1D("enu","E_{#nu};E_{#nu} (GeV)",nbins,0,10.);
+  TH2D* histxy = new TH2D("vtx","vertices ; m; m",40,-20.,20.,40,-20.,20.);
 
   // attach the branch object so we can retrieve each event
   genie::NtpMCEventRecord* myentry = new genie::NtpMCEventRecord();
@@ -30,9 +31,11 @@ void plot_gnpt(string fname="gntp.42.ghep.root", int nprint=10) {
   for (int i=0; i<nEntries; ++i) {
     mytree->GetEntry(i);
 
-    // info about the probe (i.e. incoming neutrino)
+    // info about the probe (i.e. incoming neutrino) & vertex
     double enu = myentry->event->Probe()->P4()->E();
     histe->Fill(enu);
+    histxy->Fill(myentry->event->Vertex()->X(),
+                 myentry->event->Vertex()->Y());
 
     int nfinalpi0 = 0;
     // loop over particles in the record for final state pi0
@@ -50,5 +53,10 @@ void plot_gnpt(string fname="gntp.42.ghep.root", int nprint=10) {
   }
 
   // done with all events, draw the histogram
+  TCanvas* c1 = new TCanvas("E#nu","E#nu",600,600);
+  c1->cd();
   histe->Draw();
+  TCanvas* c2 = new TCanvas("vertices","vertices",600,600);
+  c2->cd();
+  histxy->Draw("COLZ");
 }

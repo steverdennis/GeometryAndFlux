@@ -1,5 +1,3 @@
-Author: Robert Hatcher, Fermilab, 2014.May.09
-
 This material concerns the use of GENIE with an emphasis on geometry and
 fluxes.  Associated with the presentation are some example files and scripts.
 Careful of cut-and-paste from the powerpoint or PDF presentations as they
@@ -60,6 +58,13 @@ for the CINT interpreter, and
   genie -b -q myfakefluxgen.C+
 
 to compile, load and run it as a shared library.
+
+Examine the flux distributions using ROOT:
+
+  $ root myfakeflux.gsimple.root
+  flux->Show(0);
+  flux->Draw("vtxy:vtxx","","COLZ");
+  flux->Draw("E");
 
 Try running one of the standard genie applications 'gevgen' to generate
 a ntuple of GHEP event records.  To do this you'll need a set of cross
@@ -123,7 +128,7 @@ the stored GHEP events:
   // vertex info is boring (x,y,z,t)=(0,0,0,0) because gevgen used
   // the PointGeometryAnalyzer and not a real geometry
   // nor did it use a flux that varied in space
-  myentry->event->Vertex().Print();
+  myentry->event->Vertex()->Print();
 
 
 Examine the 'plot_gntp.C' script to see how it extends the concepts above
@@ -136,8 +141,46 @@ Use the single quotes (') to hide the ()'s from the shell; use the double
 quote to quote the string passed as an argument to the script.  This allows
 one to use the same script for GHEP ntuple files with different names.
 
+Build the executable for simple event generator that uses GDML geometry
+and GSimpleNtpFlux:
 
+ g++ -o gevgen_simple -DSTANDALONE -I$GENIE/src -I$ROOTSYS/include \
+   `genie-config --libs` \
+   `root-config --libs` -lGeom -lEGPythia6 \
+   `pythia6-config --libs`
+   `log4cpp-config --libs`
+   `xml2-config --libs`  \
+   gevgen_simple.C
 
+Add -DMACOSX if on a Mac OS X machine.
+
+if "log4cpp-config" isn't available use
+    -L${LOG4CPP_FQ_DIR}/lib -llog4cpp -lnsl \
+where $LOG4CPP_FQ_DIR is is where log4cpp is installed.
+
+if "pythia6-config" isn't available use
+    -L${PYTHIA_FQ_DIR}/lib -lPythia6
+(note lack of "6" on path).
+
+This should also run under 
+   $ genie gevgen_simple.C+
+but that sometimes leads to
+   (1) scary warnings about hidden overloaded methods (depending on ROOT's
+       build and configuration of ACLiC's warning level)
+   (2) a crash after everything is done and ROOT is cleaning up and
+       shutting down -- some bad interaction with AlgFactory's singleton
+       cleaner and deleting algorithms.
+
+Run it (assumes cross-sections file $GENIEXSECFILE), e.g.:
+
+   ./gevgen_simple -n 1000
+
+Use -h to give the command options; defaults should work based on previous 
+steps.  Check "genie-mcjob-<runnum>.status" from a separate terminal to
+see information about the latest event generated.  Results will be written
+a file named "gntp.<runnum>.ghep.root".
+
+   genie plot_gntp.C
 
 ---------------------------------------------------------------------------
 Robert Hatcher <rhatcher@fnal.gov>  updated 2014-05-09

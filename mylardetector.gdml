@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="GDMLSchema/gdml.xsd">
+
+<!-- 
+   created by Robert Hatcher rhatcher@fnal.gov 2014-05-07
+   A geometry consisting of a world with an alumin[i]um cylindrical can
+   holding liquid argon, and a dividing plane of copper.
+
+   While I think this is correctly constructed it doesn't render
+   particularly well with ROOT's OGL viewer.
+-->
+
+  <define>
+    <constant name="kmeter" value="100"/>
+    <constant name="pi"     value="3.14159265358979312"/>    
+    <constant name="halfpi" value="pi/2."/>   
+
+    <constant name="kCanLength"  value="1500.0"/>
+    <constant name="kCanRadius"  value="500.0"/>
+    <constant name="kAlThick"    value="0.5"/>
+    <constant name="kLArLength"  value="kCanLength-2*kAlThick"/>
+    <constant name="kLArRadius"  value="kCanRadius-kAlThick"/>
+    <constant name="kCuThick"    value="0.05"/>
+
+    <constant name="kWorldWidth"   value="2000"/>
+    <constant name="kWorldHeight"  value="2000"/>
+    <constant name="kWorldLength"  value="2000"/>
+
+  </define>
+  
+  <materials>
+
+    <element Z="7"  formula="N"  name="Nitrogen">
+      <atom value="14.01"/>
+    </element>
+    <element Z="8"  formula="O"  name="Oxygen" >
+      <atom value="15.9994"/>
+    </element>
+    <element Z="13" formula="Al" name="Aluminum">
+      <atom value="26.981538"/>
+    </element>
+    <element Z="18" formula="Ar" name="Argon">
+      <atom value="39.948"/>
+    </element>
+    <element Z="29" formula="Cu" name="Copper">
+      <atom value="63.546"/>
+    </element>
+
+    <material Z="1" formula=" " name="Vacuum" >
+      <D value="1e-25" unit="g/cc"/>
+      <atom value="1.00794" />
+    </material>
+
+    <material formula=" " name="Air">
+      <D value="0.001205" unit="g/cc" />
+      <fraction n="0.78084"  ref="Nitrogen"/>
+      <fraction n="0.209476" ref="Oxygen"/>
+      <fraction n="0.00934"  ref="Argon"/>
+    </material>
+
+    <material formula=" " name="AluminumMat">
+      <D value="2.70" unit="g/cc" />
+      <fraction n="1.0" ref="Aluminum"/>
+    </material>  
+
+    <material formula=" " name="LiquidAr">
+      <D value="1.392" unit="g/cc" />
+      <fraction n="1.0" ref="Argon"/>
+    </material>  
+
+    <material formula="Cu" name="CopperMat">
+      <D value="8.96" unit="g/cc" />
+      <fraction n="1.0" ref="Copper"/>
+    </material>  
+
+  </materials>
+  
+  <solids>
+
+    <tube name="sCan" aunit="degree" lunit="cm" 
+         rmin="0" rmax="kCanRadius" deltaphi="360" z="kCanLength"/>
+
+    <tube name="sLAr" aunit="degree" lunit="cm" 
+         rmin="0" rmax="kLArRadius" deltaphi="360" z="kLArLength"/>
+
+    <tube name="sCuPlane" aunit="degree" lunit="cm" 
+         rmin="0" rmax="kLArRadius" deltaphi="360" z="kCuThick"/>
+
+    <sphere name="sbb" aunit="degree" lunit="cm"
+      rmax="0.1" rmin="0.0"
+      startphi="0" deltaphi="360"
+      starttheta="0" deltatheta="180"/>
+
+    <box name="sWorld" lunit="cm"
+         x="kWorldWidth"
+         y="kWorldHeight"
+         z="kWorldLength"/>   
+
+  </solids>
+    
+  <structure>    
+    
+    <volume name="vCuPlane">
+      <materialref ref="CopperMat"/>
+      <solidref    ref="sCuPlane"/>
+    </volume>
+    
+    <volume name="vLAr">
+      <materialref ref="LiquidAr"/>
+      <solidref    ref="sLAr"/>
+      <physvol>
+        <volumeref ref="vCuPlane"/>
+        <position name="pCuPlane" unit="cm" x="0" y="0" z="0"/>
+      </physvol>
+    </volume>
+
+    <volume name="vCan">
+      <materialref ref="AluminumMat"/>
+      <solidref    ref="sCan"/>
+      <physvol>
+        <volumeref ref="vLAr"/>
+        <position name="pLAr" unit="cm" x="0" y="0" z="0"/>
+      </physvol>
+    </volume>
+
+    <volume name="vbb">
+      <materialref ref="CopperMat"/>
+      <solidref    ref="sbb"/>
+    </volume>
+
+    <volume name="vWorld" >
+      <materialref ref="Air"/> 
+      <solidref    ref="sWorld"/>              
+      <physvol>
+	<volumeref ref="vCan"/>
+	<position name="pCan" unit="cm" x="0" y="0" z="0"/>
+      </physvol>
+      <!-- put in small marker object so world axes show clearly in OGL -->
+      <physvol>
+        <volumeref ref="vbb"/>
+        <position name="pbb" unit="cm" x="99" y="99" z="-99"/>
+      </physvol>
+    </volume>
+
+  </structure>
+  
+  <setup name="Default" version="1.0">
+    <world ref="vWorld" />
+  </setup>
+  
+</gdml>
