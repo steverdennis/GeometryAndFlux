@@ -1,10 +1,23 @@
 #!/bin/bash
 
-g++ -o gevgen_simple -DSTANDALONE -I$GENIE/src -I$ROOTSYS/include \
-  `genie-config --libs` \
-  `root-config --libs` -lGeom -lEGPythia6 \
-  -L$PYTHIA6 -lPythia6 \
+
+if [ -z $LOG4CPP_LIB ] ; then
+  echo "Need LOG4CPP_LIB environment variable set"
+  return 
+fi
+
+command="g++ -o gevgen_simple -DSTANDALONE \
+  -Wl,--no-as-needed \
+  `root-config --cflags ` \
+  -I${GENIE}/src \
+  gevgen_simple.C \
   -L$LOG4CPP_LIB -llog4cpp -lnsl \
   `xml2-config --libs`  \
-  gevgen_simple.C
+  `root-config --glibs ` \
+  -lGeom -lEGPythia6 \
+  -L$PYTHIA6 -lPythia6 \
+  `genie-config --libs` \
+  "
 
+echo $command
+$command
