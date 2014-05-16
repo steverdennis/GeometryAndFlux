@@ -96,8 +96,8 @@ void gevgen_simple(std::string geomfile="mylardetector.gdml",
   genie::GMCJDriver* mcjDriver = new genie::GMCJDriver;
   mcjDriver->UseFluxDriver(fluxDriver);
   mcjDriver->UseGeomAnalyzer(geomDriver);
-  mcjDriver->Configure();
   mcjDriver->UseSplines();
+  mcjDriver->Configure();
   mcjDriver->ForceSingleProbScale(); // unweighted events
 
   /// Prepare to write events into TTree
